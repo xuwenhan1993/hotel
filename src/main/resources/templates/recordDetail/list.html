@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<title>幸福宾馆管理系统</title>
+		<!-- Bootstrap core CSS -->
+		<link href="asserts/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/4.0.0/css/bootstrap.css}" rel="stylesheet">
+
+		<!-- Custom styles for this template -->
+		<link href="asserts/css/dashboard.css" th:href="@{/asserts/css/dashboard.css}" rel="stylesheet">
+		<style type="text/css">
+			/* Chart.js */
+			
+			@-webkit-keyframes chartjs-render-animation {
+				from {
+					opacity: 0.99
+				}
+				to {
+					opacity: 1
+				}
+			}
+			
+			@keyframes chartjs-render-animation {
+				from {
+					opacity: 0.99
+				}
+				to {
+					opacity: 1
+				}
+			}
+			
+			.chartjs-render-monitor {
+				-webkit-animation: chartjs-render-animation 0.001s;
+				animation: chartjs-render-animation 0.001s;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div th:replace="common/bar::topbar"></div>
+
+		<div class="container-fluid">
+			<div class="row">
+				<div th:replace="common/bar::#sidebar(activeUri='records/detail')"></div>
+
+				<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+
+					<!-- 标题 -->
+					<div class="row">
+						<div class="col-md-12">
+							<h3>入住记录</h3>
+						</div>
+					</div>
+					<!--<form>
+						<div class="form-row">
+							<div class="col-3">
+								<input type="text" class="form-control" placeholder="身份证">
+							</div>
+							<div class="col-2">
+								<input type="text" class="form-control" placeholder="电话">
+							</div>
+							<div class="col-2">
+								<input type="date" class="form-control" placeholder="预计退房日期">
+							</div>
+							<button class="btn btn-outline-success my-2 my-sm-0" type="submit" style="margin-right: 10px;">搜索</button>
+							<button class="btn btn-outline-danger my-2 my-sm-0" type="reset">重置</button>
+						</div>
+					</form>-->
+					<form class="form-inline" th:action="@{/records/detail}">
+						<div class="form-group">
+							<label for="name">姓名</label>
+							<input type="text" id="name" name="name" th:value="${name}" placeholder="" class="form-control mx-sm-2" >
+						</div>
+						<div class="form-group">
+							<label for="idCard">身份证</label>
+							<input type="text" id="idCard" name="idCard" th:value="${idCard}" placeholder="" class="form-control mx-sm-2" >
+						</div>
+						<!--<div class="form-group">
+							<label for="inDate">入住日期</label>
+							<input type="date" id="inDate" name="inDate" th:value="${inDate}" placeholder="" class="form-control mx-sm-2" >
+						</div>
+						<div class="form-group">
+							<label for="outDate">离店日期</label>
+							<input type="date" id="outDate" name="outDate" th:value="${outDate}" placeholder="" class="form-control mx-sm-2" >
+						</div>-->
+						<button class="btn btn-outline-success my-2 my-sm-0" type="submit" style="margin-right: 10px;">搜索</button>
+						<button class="btn btn-outline-danger my-2 my-sm-0" type="reset" id="reset">清空</button>
+					</form>
+					<div style="height: 10px;"></div>
+<!--					<a class="btn btn-sm btn-success" th:href="@{/room}">添加房间</a>-->
+					<div class="table-responsive">
+						<table class="table table-striped table-sm">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>姓名</th>
+									<th>身份证号</th>
+									<th>电话</th>
+									<th>房间号</th>
+									<th>单价</th>
+									<th>入住日期</th>
+<!--									<th>天数</th>-->
+									<th>预计退房日期</th>
+									<th>预付房费</th>
+<!--									<th>押金</th>-->
+<!--									<th>实际离店日期</th>-->
+<!--									<th>补缴房费</th>-->
+<!--									<th>退还房费</th>-->
+<!--									<th>退还押金</th>-->
+									<th>状态</th>
+									<th>入住状态</th>
+									<th>操作</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="record:${pageInfo.list}">
+									<td th:text="${recordStat.count}"></td>
+									<td th:text="${record.name}"></td>
+									<td th:text="${record.idCard}"></td>
+									<td th:text="${record.phone}"></td>
+									<td th:text="${record.room.roomId}"></td>
+									<td th:text="${record.price}"></td>
+									<td th:text="${#dates.format(record.inDate,'yyyy-MM-dd HH:mm')}"></td>
+<!--									<td th:text="${record.days}"></td>-->
+									<td th:text="${#dates.format(record.predictOutDate,'yyyy-MM-dd HH:mm')}"></td>
+									<td th:text="${record.account}"></td>
+<!--									<td th:text="${record.deposit}"></td>-->
+<!--									<td th:text="${#dates.format(record.actualOutDate,'yyyy-MM-dd HH:mm')}"></td>-->
+<!--									<td th:text="${record.moreAccount}"></td>-->
+<!--									<td th:text="${record.backAccount}"></td>-->
+<!--									<td th:text="${record.backDeposit}"></td>-->
+									<td th:text="${record.state=='01'?'在住':(record.state=='02'?'欠费':'离店')}"></td>
+									<td>
+										<div th:if="${record.state == '01'}" style="display: inline-block;width: 50px;height: 15px;background-color: green;"></div>
+										<div th:if="${record.state == '02'}" style="display: inline-block;width: 50px;height: 15px;background-color: red;"></div>
+										<div th:if="${record.state == '03'}" style="display: inline-block;width: 50px;height: 15px;background-color: gray;"></div>
+									</td>
+<!--									<td th:text="${room.type=='01'?'双人间':'四人间'}"></td>-->
+<!--									<td th:text="${room.bathFlg=='01'?'独立卫生间':'无独卫'}"></td>-->
+									<td>
+										<a class="btn btn-sm btn-outline-primary" th:href="@{/record/detail/}+${record.id}">详情</a>
+										<!--										<button th:attr="del_uri=@{/room/}+${room.id}" class="btn btn-sm btn-danger deleteBtn">删除</button>-->
+									</td>
+								</tr>
+
+							</tbody>
+						</table>
+					</div>
+
+					<!-- 分页 -->
+					<div class="row">
+						<div class="col-md-6">
+							当前第[[${pageInfo.pageNum}]]页，共[[${pageInfo.pages}]]页，总计[[${pageInfo.total}]]条记录
+						</div>
+						<div class="col-md-6">
+							<nav aria-label="Page navigation">
+								<ul class="pagination">
+									<li class="page-item"><a th:href="@{/records/detail(pn=1)}" class="page-link">首页</a></li>
+									<li class="page-item" th:if="${pageInfo.hasPreviousPage}">
+										<a th:href="@{/records/detail}+'?pn='+${pageInfo.pageNum-1}" class="page-link" aria-label="Previous">
+											<span aria-hidden="true">&laquo;</span>
+										</a>
+									</li>
+									<li class="page-item" th:each="page_num:${pageInfo.navigatepageNums}" th:class="${page_num == pageInfo.pageNum}?'page-item active':'page-item'">
+										<a th:href="@{/records/detail}+'?pn='+${page_num}" class="page-link">[[${page_num}]]</a>
+									</li>
+									<li class="page-item" th:if="${pageInfo.hasNextPage}">
+										<a th:href="@{/records/detail}+'?pn='+${pageInfo.pageNum+1}" class="page-link" aria-label="Next">
+											<span aria-hidden="true">&raquo;</span>
+										</a>
+									</li>
+									<li class="page-item"><a th:href="@{/records/detail}+'?pn='+${pageInfo.pages}" class="page-link">末页</a></li>
+								</ul>
+							</nav>
+						</div>
+					</div>
+				</main>
+				<form id="deleteEmpForm" method="post">
+					<input type="hidden" name="_method" value="delete">
+				</form>
+			</div>
+		</div>
+
+		<!-- Bootstrap core JavaScript
+    ================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script type="text/javascript" th:src="@{/webjars/jquery/3.3.1/jquery.js}" src="asserts/js/jquery-3.2.1.slim.min.js" ></script>
+		<script type="text/javascript" th:src="@{/asserts/js/popper.min.js}" src="asserts/js/popper.min.js" ></script>
+		<script type="text/javascript" th:src="@{/webjars/bootstrap/4.0.0/js/bootstrap.js}" src="asserts/js/bootstrap.min.js" ></script>
+
+		<!-- Icons -->
+		<script type="text/javascript" th:src="@{/asserts/js/feather.min.js}" src="asserts/js/feather.min.js" ></script>
+		<script>
+			feather.replace()
+		</script>
+		<script>
+			$(".deleteBtn").click(function () {
+				$("#deleteEmpForm").attr("action",$(this).attr("del_uri")).submit();
+				return false;
+			});
+			$("#reset").click(function () {
+				$("#name").val("");
+				$("#idCard").val("");
+				return false;
+			});
+		</script>
+
+		<!-- Graphs -->
+		<!--<script type="text/javascript" th:src="@{/asserts/js/Chart.min.js}" src="asserts/js/Chart.min.js" ></script>
+		<script>
+			var ctx = document.getElementById("myChart");
+			var myChart = new Chart(ctx, {
+				type: 'line',
+				data: {
+					labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+					datasets: [{
+						data: [15339, 21345, 18483, 24003, 23489, 24092, 12034],
+						lineTension: 0,
+						backgroundColor: 'transparent',
+						borderColor: '#007bff',
+						borderWidth: 4,
+						pointBackgroundColor: '#007bff'
+					}]
+				},
+				options: {
+					scales: {
+						yAxes: [{
+							ticks: {
+								beginAtZero: false
+							}
+						}]
+					},
+					legend: {
+						display: false,
+					}
+				}
+			});
+		</script>-->
+
+	</body>
+
+</html>

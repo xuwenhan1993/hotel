@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<title>幸福宾馆管理系统</title>
+		<!-- Bootstrap core CSS -->
+		<link href="asserts/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/4.0.0/css/bootstrap.css}" rel="stylesheet">
+
+		<!-- Custom styles for this template -->
+		<link href="asserts/css/dashboard.css" th:href="@{/asserts/css/dashboard.css}" rel="stylesheet">
+<!--		<link href="asserts/css/dashboard.css" th:href="@{/asserts/css/bootstrap-datetimepicker.min.css}" rel="stylesheet">-->
+		<style type="text/css">
+			/* Chart.js */
+			
+			@-webkit-keyframes chartjs-render-animation {
+				from {
+					opacity: 0.99
+				}
+				to {
+					opacity: 1
+				}
+			}
+			
+			@keyframes chartjs-render-animation {
+				from {
+					opacity: 0.99
+				}
+				to {
+					opacity: 1
+				}
+			}
+			
+			.chartjs-render-monitor {
+				-webkit-animation: chartjs-render-animation 0.001s;
+				animation: chartjs-render-animation 0.001s;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div th:replace="common/bar::topbar"></div>
+
+		<div class="container-fluid">
+			<div class="row">
+				<div th:replace="common/bar::#sidebar(activeUri='records/update')"></div>
+
+				<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+					<form th:action="@{/record/updateHfj}" th:method="POST" >
+						<input type="hidden" name="id" th:value="${record.id}" >
+						<input type="hidden" name="rId" th:value="${record.rId}" id="rId" >
+						<input type="hidden" name="gender" th:value="${record.gender}">
+<!--						<input type="hidden" id="whole-flg" th:value="${record.wholeFlg}">-->
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label>姓名</label>
+								<input type="text" name="name" th:value="${record.name}" readonly class="form-control" placeholder="" >
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>身份证</label>
+								<input type="text" name="idCard" th:value="${record.idCard}" readonly class="form-control" placeholder="">
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>电话号码</label>
+								<input type="text" name="phone" th:value="${record.phone}" readonly class="form-control" placeholder="">
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label>性别</label><br/>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="gender" disabled value="01" th:checked="${record.gender=='01'}">
+									<label class="form-check-label">男</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="gender" disabled value="02" th:checked="${record.gender=='02'}">
+									<label class="form-check-label">女</label>
+								</div>
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>房间号</label>
+								<input type="text" name="roomId" id="roomId" class="form-control is-invalid" placeholder="" th:value="${record.room.roomId}" th:attr="oldroomid=${record.room.roomId}" required>
+								<div class="invalid-feedback">
+									原房间号：[[${record.room.roomId}]]，输入要换的房间号
+								</div>
+								<div class="valid-feedback" id="valid-feedback">
+
+								</div>
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>房间类型</label><br/>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" disabled type="radio" name="type"  value="01" th:checked="${record.room.type=='01'}">
+									<label class="form-check-label">双人间</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" disabled type="radio" name="type"  value="02" th:checked="${record.room.type=='02'}">
+									<label class="form-check-label">四人间</label>
+								</div>
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label>卫生间</label><br/>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" disabled type="radio" name="bathFlg"  value="01" th:checked="${record.room.bathFlg=='01'}">
+									<label class="form-check-label">独立卫生间</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" disabled type="radio" name="bathFlg"  value="02" th:checked="${record.room.bathFlg=='02'}">
+									<label class="form-check-label">无独卫</label>
+								</div>
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>价格</label>
+								<input type="text" id="price" name="price" readonly class="form-control" placeholder="" th:value="${record.price}">
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>入住日期</label>
+								<input type="text" th:value="${#dates.format(record.inDate, 'yyyy-MM-dd HH:mm:ss')}" readonly id="inDate" name="inDate" class="form-control" placeholder="" >
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label>入住天数</label>
+								<input type="text" id="days" readonly th:value="${record.days}" name="days" class="form-control" placeholder="" >
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>预计退房日期</label>
+								<input type="text" id="predictOutDate" readonly th:value="${#dates.format(record.predictOutDate, 'yyyy-MM-dd HH:mm:ss')}" name="predictOutDate" class="form-control" placeholder="" >
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>预付房费</label>
+								<input type="text" id="account" readonly name="account" th:value="${record.account}" class="form-control" placeholder="" >
+							</div>
+						</div>
+						<div class="form-group"></div>
+						<button type="submit" class="btn btn-info" >换房间</button>
+					</form>
+
+				</main>
+			</div>
+		</div>
+
+		<!-- Bootstrap core JavaScript
+    ================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script type="text/javascript" th:src="@{/webjars/jquery/3.3.1/jquery.js}" src="asserts/js/jquery-3.2.1.slim.min.js" ></script>
+		<script type="text/javascript" th:src="@{/asserts/js/popper.min.js}" src="asserts/js/popper.min.js" ></script>
+		<script type="text/javascript" th:src="@{/webjars/bootstrap/4.0.0/js/bootstrap.js}" src="asserts/js/bootstrap.min.js" ></script>
+<!--		<script type="text/javascript" th:src="@{/asserts/js/bootstrap-datetimepicker.zh-CN.js}" src="asserts/js/feather.min.js" ></script>-->
+<!--		<script type="text/javascript" th:src="@{/asserts/js/moment-with-locales.min.js}" src="asserts/js/feather.min.js" ></script>-->
+<!--		<script type="text/javascript" th:src="@{/asserts/js/bootstrap-datetimepicker.min.js}" src="asserts/js/feather.min.js" ></script>-->
+		<!-- Icons -->
+		<script type="text/javascript" th:src="@{/asserts/js/feather.min.js}" src="asserts/js/feather.min.js" ></script>
+		<script>
+			feather.replace();
+
+			$(function(){
+				$("#roomId").blur(function () {
+					var newRoomId = this.value;
+					if (newRoomId == '') {
+						return;
+					}
+					var oldroomid = $(this).attr("oldroomid");
+					if (oldroomid == this.value) {
+						return;
+					}
+					$.ajax({
+						type: "GET",
+						url: "/checkRoom",
+						data: "roomId="+this.value,
+						success: function(data){
+							// if ($("#whole-flg").val() == 'Y') {
+							// 	// 包房的
+							// 	if (data.remainNum != data.bedNum) {
+							// 		$("#roomId").next().text("该房间已经有人入住了！");
+							// 		$("#roomId").addClass("is-invalid");
+							// 		$("#roomId").val(oldroomid);
+							// 	} else {
+							// 		$("#rId").val(data.id);
+							// 		$("#roomId").removeClass("is-invalid").addClass("is-valid");
+							// 		$("#valid-feedback").text("该房间可以入住，每张床的价格："+data.price+"元，共"+data.bedNum+"张床！");
+							// 	}
+							// 	return;
+							// }
+							if (data.price != $("#price").val()) {
+								$("#roomId").next().text("新房间的价格和原来的房间不一样，不能操作！");
+								$("#roomId").addClass("is-invalid");
+								$("#roomId").val(oldroomid);
+							} else if (data.remainNum == 0) {
+								$("#roomId").next().text("该房间没有空床位了！");
+								$("#roomId").addClass("is-invalid");
+								$("#roomId").val(oldroomid);
+							} else {
+								$("#rId").val(data.id);
+								$("#roomId").removeClass("is-invalid").addClass("is-valid");
+								$("#valid-feedback").text("该房间可以入住！");
+							}
+						},
+						dataType: 'json'
+					});
+				});
+
+				$("button[type='submit']").click(function() {
+					if ($("#roomId").hasClass("is-invalid")) {
+						return false;
+					}
+				});
+			});
+
+
+		</script>
+
+		<!-- Graphs -->
+		<script type="text/javascript" th:src="@{/asserts/js/Chart.min.js}" src="asserts/js/Chart.min.js" ></script>
+		<script>
+			var ctx = document.getElementById("myChart");
+			var myChart = new Chart(ctx, {
+				type: 'line',
+				data: {
+					labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+					datasets: [{
+						data: [15339, 21345, 18483, 24003, 23489, 24092, 12034],
+						lineTension: 0,
+						backgroundColor: 'transparent',
+						borderColor: '#007bff',
+						borderWidth: 4,
+						pointBackgroundColor: '#007bff'
+					}]
+				},
+				options: {
+					scales: {
+						yAxes: [{
+							ticks: {
+								beginAtZero: false
+							}
+						}]
+					},
+					legend: {
+						display: false,
+					}
+				}
+			});
+		</script>
+
+	</body>
+
+</html>

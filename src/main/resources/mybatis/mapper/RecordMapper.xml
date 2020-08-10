@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.champion.hotel.mapper.RecordMapper">
+
+    <!-- int insert(Record record);-->
+    <insert id="insert" parameterType="com.champion.hotel.entity.Record">
+        insert into hotel.tb_record(id_card, name, in_date, predict_out_date, actual_out_date, days, account, deposit,
+                                    back_deposit, r_id, state, more_account, back_account, gender, phone, whole_flg, price)
+        VALUES (#{idCard}, #{name}, #{inDate}, #{predictOutDate}, #{actualOutDate}, #{days}, #{account}, #{deposit},
+                #{backDeposit}, #{rId}, #{state}, #{moreAccount}, #{backAccount}, #{gender}, #{phone}, #{wholeFlg}, #{price})
+    </insert>
+
+    <!--List<Record> listRecords();-->
+    <select id="listRecords" resultMap="recordMap">
+        select a.id,
+        id_card,
+        name,
+        in_date,
+        predict_out_date,
+        actual_out_date,
+        days,
+        account,
+        deposit,
+        back_deposit,
+        r_id,
+        state,
+        more_account,
+        back_account, gender, phone, whole_flg, a.price record_price, b.id rid, room_id, type, bed_num, remain_num, current_gender, b.price, bath_flg
+        from tb_record a left join tb_rooms b on a.r_id = b.id
+        <if test="_parameter != null">
+            <where>
+                <if test="roomId != null and roomId != ''">
+                    room_id = #{roomId}
+                </if>
+                <if test="state != null">
+                    and state != #{state}
+                </if>
+                <if test="name != null and name != ''">
+                    and name like #{name}
+                </if>
+                <if test="idCard != null and idCard != ''">
+                    and id_card like #{idCard}
+                </if>
+            </where>
+        </if>
+        <if test="predictOutDateOrder != null">
+            order by predict_out_date
+        </if>
+        <if test="predictOutDateOrder == null">
+            order by a.id desc
+        </if>
+    </select>
+
+
+    <resultMap id="recordMap" type="com.champion.hotel.entity.Record">
+        <id column="id" property="id" />
+        <result column="id_card" property="idCard" />
+        <result column="name" property="name" />
+        <result column="in_date" property="inDate" />
+        <result column="predict_out_date" property="predictOutDate" />
+        <result column="actual_out_date" property="actualOutDate" />
+        <result column="days" property="days" />
+        <result column="account" property="account" />
+        <result column="deposit" property="deposit" />
+        <result column="back_deposit" property="backDeposit" />
+        <result column="r_id" property="rId" />
+        <result column="state" property="state" />
+        <result column="more_account" property="moreAccount" />
+        <result column="back_account" property="backAccount" />
+        <result column="gender" property="gender" />
+        <result column="phone" property="phone" />
+        <result column="whole_flg" property="wholeFlg" />
+        <result column="record_price" property="price" />
+        <association property="room" javaType="com.champion.hotel.entity.Room">
+            <id column="rid" property="id" />
+            <result column="room_id" property="roomId"/>
+            <result column="type" property="type"/>
+            <result column="bed_num" property="bedNum"/>
+            <result column="remain_num" property="remainNum"/>
+            <result column="current_gender" property="currentGender"/>
+            <result column="price" property="price"/>
+            <result column="bath_flg" property="bathFlg"/>
+        </association>
+    </resultMap>
+
+    <!--  Record getRecordById(Integer id);-->
+    <select id="getRecordById" resultMap="recordMap">
+        select a.id,
+               id_card,
+               name,
+               in_date,
+               predict_out_date,
+               actual_out_date,
+               days,
+               account,
+               deposit,
+               back_deposit,
+               r_id,
+               state,
+               more_account,
+               back_account, gender, phone, whole_flg, a.price record_price, b.id rid, room_id, type, bed_num, remain_num, current_gender, b.price, bath_flg
+        from tb_record a left join tb_rooms b on a.r_id = b.id
+        where a.id = #{id}
+    </select>
+
+    <!-- int update(Record record);-->
+    <update id="update">
+        update tb_record
+        <set>
+            <if test="idCard != null">
+                id_card = #{idCard},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="inDate != null">
+                in_date = #{inDate},
+            </if>
+            <if test="predictOutDate != null">
+                predict_out_date = #{predictOutDate},
+            </if>
+            <if test="actualOutDate != null">
+                actual_out_date = #{actualOutDate},
+            </if>
+            <if test="days != null">
+                days = #{days},
+            </if>
+            <if test="account != null">
+                account = #{account},
+            </if>
+            <if test="deposit != null">
+                deposit = #{deposit},
+            </if>
+            <if test="backDeposit != null">
+                back_deposit = #{backDeposit},
+            </if>
+            <if test="rId != null">
+                r_id = #{rId},
+            </if>
+            <if test="state != null">
+                state = #{state},
+            </if>
+            <if test="moreAccount != null">
+                more_account = #{moreAccount},
+            </if>
+            <if test="backAccount != null">
+                back_account = #{backAccount},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="wholeFlg != null">
+                whole_flg = #{wholeFlg},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--  int scheduleUpdateState();  -->
+    <update id="scheduleUpdateState">
+        update tb_record set state = '02' where now() >= predict_out_date and state = '01'
+    </update>
+
+<!--  int getInCountByIdCard(String idCard);  -->
+    <select id="getInCountByIdCard" resultType="int">
+        select count(*) from tb_record where id_card = #{idCard} and state != '03'
+    </select>
+</mapper>

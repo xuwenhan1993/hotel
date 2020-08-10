@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.champion.hotel.mapper.CasherMapper">
+    <!--int insert(Casher casher);-->
+    <insert id="insert">
+        insert into tb_casher (account, more_account, back_account, deposit, back_deposit, record_id, operate_date)
+        VALUES (#{account}, #{moreAccount}, #{backAccount}, #{deposit}, #{backDeposit}, #{recordId}, #{operateDate})
+    </insert>
+
+    <!--List<Casher> getList(@Param("groupBy") String groupBy, @Param("start") Date start, @Param("end") Date end);-->
+    <select id="getList" resultType="com.champion.hotel.entity.Casher" >
+        select ifnull(sum(account),0) account, ifnull(sum(more_account),0) moreAccount, ifnull(sum(back_account),0) backAccount,
+               ifnull(sum(deposit),0) deposit, ifnull(sum(back_deposit),0) backDeposit, date_format(operate_date, #{groupBy}) operateDate
+        from tb_casher
+        <where>
+            <if test="start != null">
+                operate_date >= #{start}
+            </if>
+            <if test="end != null">
+                and operate_date &lt; #{end}
+            </if>
+        </where>
+        group by operateDate
+        order by operate_date desc
+    </select>
+</mapper>

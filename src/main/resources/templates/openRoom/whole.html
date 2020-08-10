@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<title>幸福宾馆管理系统</title>
+		<!-- Bootstrap core CSS -->
+		<link href="asserts/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/4.0.0/css/bootstrap.css}" rel="stylesheet">
+
+		<!-- Custom styles for this template -->
+		<link href="asserts/css/dashboard.css" th:href="@{/asserts/css/dashboard.css}" rel="stylesheet">
+<!--		<link href="asserts/css/dashboard.css" th:href="@{/asserts/css/bootstrap-datetimepicker.min.css}" rel="stylesheet">-->
+		<style type="text/css">
+			/* Chart.js */
+			
+			@-webkit-keyframes chartjs-render-animation {
+				from {
+					opacity: 0.99
+				}
+				to {
+					opacity: 1
+				}
+			}
+			
+			@keyframes chartjs-render-animation {
+				from {
+					opacity: 0.99
+				}
+				to {
+					opacity: 1
+				}
+			}
+			
+			.chartjs-render-monitor {
+				-webkit-animation: chartjs-render-animation 0.001s;
+				animation: chartjs-render-animation 0.001s;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div th:replace="common/bar::topbar"></div>
+
+		<div class="container-fluid">
+			<div class="row">
+				<div th:replace="common/bar::#sidebar(activeUri='openRooms')"></div>
+
+				<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+					<h3>包房操作</h3>
+					<form th:action="@{/openRoom}" th:method="POST" >
+						<input type="hidden" name="rId" th:value="${room.id}" >
+						<input type="hidden" name="wholeFlg" th:value="${'Y'}" >
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label>姓名</label>
+								<input type="text" name="name" class="form-control" placeholder="" required>
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>身份证</label>
+								<input type="text" name="idCard" id="idCard" class="form-control" placeholder="请输入18位身份证号" required>
+								<div class="invalid-feedback">
+									Looks good!
+								</div>
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>电话号码</label>
+								<input type="text" name="phone" class="form-control" placeholder="" required>
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label>性别</label><br/>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="gender"  value="01" checked required>
+									<label class="form-check-label">男</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="gender"  value="02" required>
+									<label class="form-check-label">女</label>
+								</div>
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>房间号</label>
+								<input type="text" readonly name="roomId" class="form-control" placeholder="" th:value="${room!=null}?${room.roomId}">
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>房间类型</label><br/>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" disabled type="radio" name="type"  value="01" th:checked="${room!=null}?${room.type=='01'}">
+									<label class="form-check-label">双人间</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" disabled type="radio" name="type"  value="02" th:checked="${room!=null}?${room.type=='02'}">
+									<label class="form-check-label">四人间</label>
+								</div>
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label>卫生间</label><br/>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" disabled type="radio" name="bathFlg"  value="01" th:checked="${room!=null}?${room.bathFlg=='01'}">
+									<label class="form-check-label">独立卫生间</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" disabled type="radio" name="bathFlg"  value="02" th:checked="${room!=null}?${room.bathFlg=='02'}">
+									<label class="form-check-label">无独卫</label>
+								</div>
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>价格</label>
+								<input type="text" id="price" name="price" class="form-control" placeholder="" th:value="${room!=null}?${room.price*room.bedNum}" th:attr="minPrice=${room!=null}?${room.price*room.bedNum}" required>
+								<div class="invalid-feedback">
+									Looks good!
+								</div>
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label>入住日期</label>
+								<input type="text" th:value="${#dates.format(currentDate, 'yyyy-MM-dd HH:mm:ss')}" id="inDate" name="inDate" readonly class="form-control" placeholder="" >
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>入住天数</label>
+								<input type="text" id="days" name="days" class="form-control" placeholder="" required>
+								<div class="invalid-feedback">
+									Looks good!
+								</div>
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>预计退房日期</label>
+								<input type="text" id="predictOutDate" name="predictOutDate" readonly class="form-control" placeholder="" >
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label>预付房费</label>
+								<input type="text" id="account" readonly name="account" class="form-control" placeholder="" required>
+								<div class="invalid-feedback">
+									Looks good!
+								</div>
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>押金</label>
+								<input type="text"  name="deposit" id="deposit" class="form-control" placeholder="" required>
+								<div class="invalid-feedback">
+									Looks good!
+								</div>
+							</div>
+						</div>
+						<div class="form-group"></div>
+						<button type="submit" class="btn btn-success" >包房</button>
+					</form>
+
+				</main>
+			</div>
+		</div>
+
+		<!-- Bootstrap core JavaScript
+    ================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script type="text/javascript" th:src="@{/webjars/jquery/3.3.1/jquery.js}" src="asserts/js/jquery-3.2.1.slim.min.js" ></script>
+		<script type="text/javascript" th:src="@{/asserts/js/popper.min.js}" src="asserts/js/popper.min.js" ></script>
+		<script type="text/javascript" th:src="@{/webjars/bootstrap/4.0.0/js/bootstrap.js}" src="asserts/js/bootstrap.min.js" ></script>
+<!--		<script type="text/javascript" th:src="@{/asserts/js/bootstrap-datetimepicker.zh-CN.js}" src="asserts/js/feather.min.js" ></script>-->
+<!--		<script type="text/javascript" th:src="@{/asserts/js/moment-with-locales.min.js}" src="asserts/js/feather.min.js" ></script>-->
+<!--		<script type="text/javascript" th:src="@{/asserts/js/bootstrap-datetimepicker.min.js}" src="asserts/js/feather.min.js" ></script>-->
+		<!-- Icons -->
+		<script type="text/javascript" th:src="@{/asserts/js/feather.min.js}" src="asserts/js/feather.min.js" ></script>
+		<script>
+			feather.replace();
+
+			$(function(){
+				$("#price").blur(function () {
+					var price = this.value;
+					if (price == '') {
+						return;
+					}
+					if (price.indexOf(".") > -1 || price.indexOf("-") > -1 || isNaN(price)) {
+						$(this).next().text("请输入正整数");
+						$(this).addClass("is-invalid");
+						return;
+					}
+					if (price < $(this).attr("minPrice")) {
+						$(this).next().text("包房的价格不能少于"+$(this).attr("minPrice")+"元");
+						$(this).addClass("is-invalid");
+						return;
+					}
+					$(this).removeClass("is-invalid");
+
+					var days = $("#days").val();
+					if (days != '') {
+						$("#account").val(price*days);
+					}
+				});
+
+				$("#days").blur(function () {
+					var days = this.value;
+					if (days == '') {
+						return;
+					}
+					if (days.indexOf(".") > -1 || days.indexOf("-") > -1 || isNaN(days)) {
+						$(this).next().text("请输入整数");
+						$(this).addClass("is-invalid");
+						return;
+					}
+					$(this).removeClass("is-invalid");
+					var inDate = new Date($("#inDate").val());
+					var timeMills = inDate.getTime() + 1000*60*60*24*days;
+					var outDate = new Date(timeMills).setHours(12,0,0);
+					outDate = new Date(outDate);
+					var time = outDate.getFullYear() + "-" + ("" + (outDate.getMonth() + 101))
+							.substring(1) + "-" + ("" + (outDate.getDate() + 100)).substr(1) + " " + ("" + (outDate.getHours() + 100))
+							.substr(1) + ":" + ("" + (outDate.getMinutes() + 100)).substr(1) + ":" + ("" + (outDate.getSeconds() + 100)).substr(1);
+					$("#predictOutDate").val(time);
+
+					var price = $("#price").val();
+					if (price != '') {
+						$("#account").val(days*price);
+					}
+				});
+
+				$("#idCard").blur(function () {
+					var idCard = this.value;
+					if (idCard != '') {
+						if (!/^[\d\w]+$/.test(idCard)) {
+							$(this).next().text("身份证号码格式不对");
+							$(this).addClass("is-invalid");
+							return;
+						}
+						// 校验是否在住
+						$.get("/checkIdCard","idCard="+idCard,function(data) {
+							if (data == 'true') {
+								$("#idCard").next().text("该顾客在住中，可直接进行续期操作");
+								$("#idCard").addClass("is-invalid");
+								return;
+							}
+						}, 'text');
+					}
+					$(this).removeClass("is-invalid");
+				});
+
+				$("#account").blur(function () {
+					var account = this.value;
+					if (account == '') {
+						return;
+					}
+					if (account.indexOf(".") > -1 || account.indexOf("-") > -1 || isNaN(account)) {
+						$(this).next().text("请输入整数");
+						$(this).addClass("is-invalid");
+						return;
+					}
+					$(this).removeClass("is-invalid");
+				});
+				$("#deposit").blur(function () {
+					var deposit = this.value;
+					if (deposit == '') {
+						return;
+					}
+					if (deposit.indexOf(".") > -1 || deposit.indexOf("-") > -1 || isNaN(deposit)) {
+						$(this).next().text("请输入整数");
+						$(this).addClass("is-invalid");
+						return;
+					}
+					$(this).removeClass("is-invalid");
+				});
+
+				$("button[type='submit']").click(function() {
+					if ($("#idCard").hasClass("is-invalid") || $("#days").hasClass("is-invalid") || $("#account").hasClass("is-invalid") || $("#deposit").hasClass("is-invalid")) {
+						return false;
+					}
+				});
+			});
+
+		</script>
+
+
+	</body>
+
+</html>

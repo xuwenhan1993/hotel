@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<title>幸福宾馆管理系统</title>
+		<!-- Bootstrap core CSS -->
+		<link href="asserts/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/4.0.0/css/bootstrap.css}" rel="stylesheet">
+
+		<!-- Custom styles for this template -->
+		<link href="asserts/css/dashboard.css" th:href="@{/asserts/css/dashboard.css}" rel="stylesheet">
+<!--		<link href="asserts/css/dashboard.css" th:href="@{/asserts/css/bootstrap-datetimepicker.min.css}" rel="stylesheet">-->
+		<style type="text/css">
+			/* Chart.js */
+			
+			@-webkit-keyframes chartjs-render-animation {
+				from {
+					opacity: 0.99
+				}
+				to {
+					opacity: 1
+				}
+			}
+			
+			@keyframes chartjs-render-animation {
+				from {
+					opacity: 0.99
+				}
+				to {
+					opacity: 1
+				}
+			}
+			
+			.chartjs-render-monitor {
+				-webkit-animation: chartjs-render-animation 0.001s;
+				animation: chartjs-render-animation 0.001s;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div th:replace="common/bar::topbar"></div>
+
+		<div class="container-fluid">
+			<div class="row">
+				<div th:replace="common/bar::#sidebar(activeUri='records/out')"></div>
+
+				<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+					<form th:action="@{/record}" th:method="POST" >
+						<input type="hidden" name="id" th:value="${record.id}" >
+						<input type="hidden" name="rId" th:value="${record.rId}" >
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label>姓名</label>
+								<input type="text" name="name" th:value="${record.name}" readonly class="form-control" placeholder="" >
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>身份证</label>
+								<input type="text" name="idCard" th:value="${record.idCard}" readonly class="form-control" placeholder="">
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>电话号码</label>
+								<input type="text" name="phone" th:value="${record.phone}" readonly class="form-control" placeholder="">
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label>性别</label><br/>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="gender" disabled value="01" th:checked="${record.gender=='01'}">
+									<label class="form-check-label">男</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="gender" disabled value="02" th:checked="${record.gender=='02'}">
+									<label class="form-check-label">女</label>
+								</div>
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>房间号</label>
+								<input type="text" readonly name="roomId" class="form-control" placeholder="" th:value="${record.room.roomId}">
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>房间类型</label><br/>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" disabled type="radio" name="type"  value="01" th:checked="${record.room.type=='01'}">
+									<label class="form-check-label">双人间</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" disabled type="radio" name="type"  value="02" th:checked="${record.room.type=='02'}">
+									<label class="form-check-label">四人间</label>
+								</div>
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label>卫生间</label><br/>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" disabled type="radio" name="bathFlg"  value="01" th:checked="${record.room.bathFlg=='01'}">
+									<label class="form-check-label">独立卫生间</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" disabled type="radio" name="bathFlg"  value="02" th:checked="${record.room.bathFlg=='02'}">
+									<label class="form-check-label">无独卫</label>
+								</div>
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>价格</label>
+								<input type="text" id="price" name="price" readonly class="form-control" placeholder="" th:value="${record.price}">
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>入住日期</label>
+								<input type="text" th:value="${#dates.format(record.inDate, 'yyyy-MM-dd HH:mm:ss')}" readonly id="inDate" name="inDate" class="form-control" placeholder="" >
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label>入住天数</label>
+								<input type="text" id="days" th:value="${record.days}" name="days" readonly class="form-control" placeholder="" >
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>预计退房日期</label>
+								<input type="text" id="predictOutDate" readonly th:value="${#dates.format(record.predictOutDate, 'yyyy-MM-dd HH:mm:ss')}" name="predictOutDate" class="form-control" placeholder="" >
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>实际退房日期</label>
+								<input type="text" id="actualOutDate" readonly th:value="${#dates.format(record.actualOutDate, 'yyyy-MM-dd HH:mm:ss')}" name="actualOutDate" class="form-control" placeholder="" >
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label>预付房费</label>
+								<input type="text" id="account" readonly name="account" th:value="${record.account}" class="form-control" placeholder="" >
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>补缴房费</label>
+								<input type="text" id="moreAccount" name="moreAccount" th:value="${record.moreAccount}" th:attr="min=${record.moreAccount}" class="form-control is-valid" placeholder="" required>
+								<div class="invalid-feedback">
+
+								</div>
+								<div class="valid-feedback">
+									需要补交的房费，记得收账哦😄
+								</div>
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>退还房费</label>
+								<input type="text" id="backAccount" name="backAccount" th:value="${record.backAccount}" th:attr="max=${record.backAccount}" class="form-control is-invalid" placeholder="" required>
+								<div class="valid-feedback">
+
+								</div>
+								<div class="invalid-feedback">
+									这是需要退给顾客的房费😔
+								</div>
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label>押金</label>
+								<input type="text"  name="deposit" readonly th:value="${record.deposit}" class="form-control" placeholder="" >
+							</div>
+							<div class="col-sm-1"></div>
+							<div class="form-group col-md-3">
+								<label>退还押金</label>
+								<input type="text" id="backDeposit" name="backDeposit" th:value="${record.backDeposit}" th:attr="max=${record.backDeposit}" class="form-control is-invalid" placeholder="" required>
+								<div class="valid-feedback">
+
+								</div>
+								<div class="invalid-feedback">
+									这是需要退给顾客的押金
+								</div>
+							</div>
+						</div>
+
+						<button type="submit" class="btn btn-danger" >退房</button>
+					</form>
+
+				</main>
+			</div>
+		</div>
+
+		<!-- Bootstrap core JavaScript
+    ================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script type="text/javascript" th:src="@{/webjars/jquery/3.3.1/jquery.js}" src="asserts/js/jquery-3.2.1.slim.min.js" ></script>
+		<script type="text/javascript" th:src="@{/asserts/js/popper.min.js}" src="asserts/js/popper.min.js" ></script>
+		<script type="text/javascript" th:src="@{/webjars/bootstrap/4.0.0/js/bootstrap.js}" src="asserts/js/bootstrap.min.js" ></script>
+<!--		<script type="text/javascript" th:src="@{/asserts/js/bootstrap-datetimepicker.zh-CN.js}" src="asserts/js/feather.min.js" ></script>-->
+<!--		<script type="text/javascript" th:src="@{/asserts/js/moment-with-locales.min.js}" src="asserts/js/feather.min.js" ></script>-->
+<!--		<script type="text/javascript" th:src="@{/asserts/js/bootstrap-datetimepicker.min.js}" src="asserts/js/feather.min.js" ></script>-->
+		<!-- Icons -->
+		<script type="text/javascript" th:src="@{/asserts/js/feather.min.js}" src="asserts/js/feather.min.js" ></script>
+		<script>
+			feather.replace();
+
+			$(function(){
+				$("#days").blur(function () {
+					var days = this.value;
+					var inDate = new Date($("#inDate").val());
+					var timeMills = inDate.getTime() + 1000*60*60*24*days;
+					var outDate = new Date(timeMills).setHours(12,0,0);
+					outDate = new Date(outDate);
+					var time = outDate.getFullYear() + "-" + ("" + (outDate.getMonth() + 101))
+							.substring(1) + "-" + ("" + (outDate.getDate() + 100)).substr(1) + " " + ("" + (outDate.getHours() + 100))
+							.substr(1) + ":" + ("" + (outDate.getMinutes() + 100)).substr(1) + ":" + ("" + (outDate.getSeconds() + 100)).substr(1);
+					$("#predictOutDate").val(time);
+
+					$("#account").val(days*$("#price").val());
+				});
+
+				$("#moreAccount").blur(function () {
+					var moreAccount = this.value;
+					if (moreAccount == '') {
+						return;
+					}
+					if (moreAccount.indexOf(".") > -1 || moreAccount.indexOf("-") > -1 || isNaN(moreAccount)) {
+						$(this).next().text("请输入整数");
+						$(this).addClass("is-invalid");
+						return;
+					}
+					// 不能少收
+					if (moreAccount < $(this).attr("min")) {
+						$(this).next().text("不能小于"+$(this).attr("min"));
+						$(this).addClass("is-invalid");
+						return;
+					}
+					$(this).removeClass("is-invalid");
+				});
+				$("#backAccount").blur(function () {
+					var backAccount = this.value;
+					if (backAccount == '') {
+						return;
+					}
+					if (backAccount.indexOf(".") > -1 || backAccount.indexOf("-") > -1 || isNaN(backAccount)) {
+						$(this).next().text("请输入整数");
+						$(this).addClass("is-valid");
+						return;
+					}
+					// 不能多退
+					if (backAccount > $(this).attr("max")) {
+						$(this).next().text("不能大于"+$(this).attr("max"));
+						$(this).addClass("is-valid");
+						return;
+					}
+					$(this).removeClass("is-valid");
+				});
+				$("#backDeposit").blur(function () {
+					var backDeposit = this.value;
+					if (backDeposit == '') {
+						return;
+					}
+					if (backDeposit.indexOf(".") > -1 || backDeposit.indexOf("-") > -1 || isNaN(backDeposit)) {
+						$(this).next().text("请输入整数");
+						$(this).addClass("is-valid");
+						return;
+					}
+					// 不能多退
+					if (backDeposit > $(this).attr("max")) {
+						$(this).next().text("不能大于"+$(this).attr("max"));
+						$(this).addClass("is-valid");
+						return;
+					}
+					$(this).removeClass("is-valid");
+				});
+
+				$("button[type='submit']").click(function() {
+					if ($("#moreAccount").hasClass("is-invalid") || $("#backAccount").hasClass("is-valid") || $("#backDeposit").hasClass("is-valid")) {
+						return false;
+					}
+				});
+			});
+
+
+		</script>
+
+
+	</body>
+
+</html>

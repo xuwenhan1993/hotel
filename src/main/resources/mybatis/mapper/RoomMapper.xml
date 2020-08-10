@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.champion.hotel.mapper.RoomMapper">
+
+    <!-- int insert(Room room);-->
+    <insert id="insert" parameterType="com.champion.hotel.entity.Room">
+        insert into hotel.tb_rooms (room_id, type, bed_num, remain_num, current_gender, price, bath_flg)
+        VALUES (#{roomId}, #{type}, #{bedNum}, #{bedNum}, #{currentGender}, #{price}, #{bathFlg})
+    </insert>
+
+    <!--List<Room> listRooms();-->
+    <select id="listRooms" resultType="com.champion.hotel.entity.Room">
+        select id, room_id, type, bed_num, remain_num, current_gender, price, bath_flg from tb_rooms
+        <if test="_parameter != null">
+            <where>
+                <if test="roomId != null and roomId != ''">
+                    room_id = #{roomId}
+                </if>
+            </where>
+        </if>
+    </select>
+
+    <!--  Room getRoomById(Integer id);-->
+    <select id="getRoomById" resultType="com.champion.hotel.entity.Room">
+        select id, room_id, type, bed_num, remain_num, current_gender, price, bath_flg from tb_rooms where id = #{id}
+    </select>
+
+<!--  Room getRoomByRoomId(String roomId);  -->
+    <select id="getRoomByRoomId" resultType="com.champion.hotel.entity.Room">
+        select id, room_id, type, bed_num, remain_num, current_gender, price, bath_flg from tb_rooms where room_id = #{roomId}
+    </select>
+
+    <!-- int update(Room room);-->
+    <update id="update" >
+        update tb_rooms
+        <set>
+            <if test="roomId != null">
+                room_id = #{roomId},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="bedNum != null">
+                bed_num = #{bedNum},
+            </if>
+            <if test="remainNum != null">
+                remain_num = #{remainNum},
+            </if>
+            <if test="currentGender != null">
+                current_gender = #{currentGender},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="bathFlg != null">
+                bath_flg = #{bathFlg}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- int delete(Integer id);-->
+    <delete id="delete">
+        delete from tb_rooms where id = #{id}
+    </delete>
+
+    <!--  int setCurrentGenderNull(Integer id);  -->
+    <update id="setCurrentGenderNull">
+        update tb_rooms set current_gender = null where id = #{id}
+    </update>
+</mapper>

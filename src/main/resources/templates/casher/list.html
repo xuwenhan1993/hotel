@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<title>幸福宾馆管理系统</title>
+		<!-- Bootstrap core CSS -->
+		<link href="asserts/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/4.0.0/css/bootstrap.css}" rel="stylesheet">
+
+		<!-- Custom styles for this template -->
+		<link href="asserts/css/dashboard.css" th:href="@{/asserts/css/dashboard.css}" rel="stylesheet">
+		<style type="text/css">
+			/* Chart.js */
+			
+			@-webkit-keyframes chartjs-render-animation {
+				from {
+					opacity: 0.99
+				}
+				to {
+					opacity: 1
+				}
+			}
+			
+			@keyframes chartjs-render-animation {
+				from {
+					opacity: 0.99
+				}
+				to {
+					opacity: 1
+				}
+			}
+			
+			.chartjs-render-monitor {
+				-webkit-animation: chartjs-render-animation 0.001s;
+				animation: chartjs-render-animation 0.001s;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div th:replace="common/bar::topbar"></div>
+
+		<div class="container-fluid">
+			<div class="row">
+				<div th:replace="common/bar::#sidebar(activeUri='casher')"></div>
+
+				<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+
+					<!-- 标题 -->
+					<div class="row">
+						<div class="col-md-12">
+							<h3>营业统计</h3>
+						</div>
+					</div>
+
+					<form class="form-inline" th:action="@{/casher}">
+						<div class="form-group">
+							<label for="start">开始日期</label>
+							<input type="date" id="start" name="start" th:value="${start}" placeholder="" class="form-control mx-sm-3" >
+						</div>
+						<div class="form-group">
+							<label for="end">结束日期</label>
+							<input type="date" id="end" name="end" th:value="${end}" placeholder="" class="form-control mx-sm-3" >
+						</div>
+						<button class="btn btn-outline-success my-2 my-sm-0" type="submit" style="margin-right: 10px;">搜索</button>
+						<button class="btn btn-outline-danger my-2 my-sm-0" type="reset" id="reset">清空</button>
+					</form>
+					<div style="height: 10px;"></div>
+<!--					<a class="btn btn-sm btn-success" th:href="@{/room}">添加房间</a>-->
+					<div class="table-responsive">
+						<table class="table table-striped table-sm">
+							<thead>
+								<tr>
+									<th>日期</th>
+									<th>收入房费（元）</th>
+									<th>补交房费（元）</th>
+									<th>退还房费（元）</th>
+									<th>收入押金</th>
+									<th>退还押金</th>
+									<th>收支合计</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="casher:${pageInfo.list}">
+									<td th:text="${#dates.format(casher.operateDate, 'yyyy-MM-dd')}" ></td>
+									<td th:text="${casher.account}" style="color: green;"></td>
+									<td th:text="${casher.moreAccount}" style="color: green;"></td>
+									<td th:text="${-casher.backAccount}" style="color: red;"></td>
+									<td th:text="${casher.deposit}" style="color: green;"></td>
+									<td th:text="${-casher.backDeposit}" style="color: red;"></td>
+									<td th:text="${casher.account + casher.moreAccount + casher.deposit - casher.backAccount - casher.backDeposit}"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<!-- 分页 -->
+					<div class="row">
+						<div class="col-md-6">
+							当前第[[${pageInfo.pageNum}]]页，共[[${pageInfo.pages}]]页，总计[[${pageInfo.total}]]条记录
+						</div>
+						<div class="col-md-6">
+							<nav aria-label="Page navigation">
+								<ul class="pagination">
+									<li class="page-item"><a th:href="@{/casher(pn=1)}+'&start='+${start==null?'':start}+'&end='+${end==null?'':end}" class="page-link">首页</a></li>
+									<li class="page-item" th:if="${pageInfo.hasPreviousPage}">
+										<a th:href="@{/casher}+'?pn='+${pageInfo.pageNum-1}+'&start='+${start==null?'':start}+'&end='+${end==null?'':end}" class="page-link" aria-label="Previous">
+											<span aria-hidden="true">&laquo;</span>
+										</a>
+									</li>
+									<li class="page-item" th:each="page_num:${pageInfo.navigatepageNums}" th:class="${page_num == pageInfo.pageNum}?'page-item active':'page-item'">
+										<a th:href="@{/casher}+'?pn='+${page_num}+'&start='+${start==null?'':start}+'&end='+${end==null?'':end}" class="page-link">[[${page_num}]]</a>
+									</li>
+									<li class="page-item" th:if="${pageInfo.hasNextPage}">
+										<a th:href="@{/casher}+'?pn='+${pageInfo.pageNum+1}+'&start='+${start==null?'':start}+'&end='+${end==null?'':end}" class="page-link" aria-label="Next">
+											<span aria-hidden="true">&raquo;</span>
+										</a>
+									</li>
+									<li class="page-item"><a th:href="@{/casher}+'?pn='+${pageInfo.pages}+'&start='+${start==null?'':start}+'&end='+${end==null?'':end}" class="page-link">末页</a></li>
+								</ul>
+							</nav>
+						</div>
+					</div>
+				</main>
+				<form id="deleteEmpForm" method="post">
+					<input type="hidden" name="_method" value="delete">
+				</form>
+			</div>
+		</div>
+
+		<!-- Bootstrap core JavaScript
+    ================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script type="text/javascript" th:src="@{/webjars/jquery/3.3.1/jquery.js}" src="asserts/js/jquery-3.2.1.slim.min.js" ></script>
+		<script type="text/javascript" th:src="@{/asserts/js/popper.min.js}" src="asserts/js/popper.min.js" ></script>
+		<script type="text/javascript" th:src="@{/webjars/bootstrap/4.0.0/js/bootstrap.js}" src="asserts/js/bootstrap.min.js" ></script>
+
+		<!-- Icons -->
+		<script type="text/javascript" th:src="@{/asserts/js/feather.min.js}" src="asserts/js/feather.min.js" ></script>
+		<script>
+			feather.replace()
+		</script>
+		<script>
+			$(".deleteBtn").click(function () {
+				$("#deleteEmpForm").attr("action",$(this).attr("del_uri")).submit();
+				return false;
+			});
+			$("#reset").click(function () {
+				$("#start").val("");
+				$("#end").val("");
+				return false;
+			});
+			// $("button[type='submit']").click(function () {
+			// 	alert($(this).parent().serialize())
+			// 	return false;
+			// });
+		</script>
+
+	</body>
+
+</html>
